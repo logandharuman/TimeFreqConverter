@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time and Frequency Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        label, input, select, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .input-group, .output-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        select {
+            width: auto;
+        }
+        .output {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Column: Time to Frequency -->
+        <div class="column">
+            <h2>Time to Frequency</h2>
+            <label for="timeInput">Input Time:</label>
+            <div class="input-group">
+                <input type="number" id="timeInput" placeholder="Enter time">
+                <select id="timeInputUnit">
+                    <option value="s">s</option>
+                    <option value="ms">ms</option>
+                    <option value="us">µs</option>
+                    <option value="ns">ns</option>
+                </select>
+            </div>
+
+            <label for="frequencyOutput">Output Frequency:</label>
+            <div class="output-group">
+                <input type="text" id="frequencyOutput" readonly>
+                <select id="frequencyOutputUnit">
+                    <option value="hz">Hz</option>
+                    <option value="khz">kHz</option>
+                    <option value="mhz">MHz</option>
+                    <option value="ghz">GHz</option>
+                </select>
+            </div>
+
+            <button onclick="convertTimeToFrequency()">Convert</button>
+        </div>
+
+        <!-- Right Column: Frequency to Time -->
+        <div class="column">
+            <h2>Frequency to Time</h2>
+            <label for="frequencyInput">Input Frequency:</label>
+            <div class="input-group">
+                <input type="number" id="frequencyInput" placeholder="Enter frequency">
+                <select id="frequencyInputUnit">
+                    <option value="hz">Hz</option>
+                    <option value="khz">kHz</option>
+                    <option value="mhz">MHz</option>
+                    <option value="ghz">GHz</option>
+                </select>
+            </div>
+
+            <label for="timeOutput">Output Time:</label>
+            <div class="output-group">
+                <input type="text" id="timeOutput" readonly>
+                <select id="timeOutputUnit">
+                    <option value="s">s</option>
+                    <option value="ms">ms</option>
+                    <option value="us">µs</option>
+                    <option value="ns">ns</option>
+                </select>
+            </div>
+
+            <button onclick="convertFrequencyToTime()">Convert</button>
+        </div>
+    </div>
+
+    <script>
+        // Conversion factors
+        const timeUnits = {
+            s: 1,
+            ms: 1e-3,
+            us: 1e-6,
+            ns: 1e-9
+        };
+
+        const frequencyUnits = {
+            hz: 1,
+            khz: 1e3,
+            mhz: 1e6,
+            ghz: 1e9
+        };
+
+        // Function to convert Time to Frequency
+        function convertTimeToFrequency() {
+            const timeInput = parseFloat(document.getElementById("timeInput").value);
+            const timeUnit = document.getElementById("timeInputUnit").value;
+            const frequencyUnit = document.getElementById("frequencyOutputUnit").value;
+
+            if (isNaN(timeInput)) {
+                alert("Please enter a valid number for time.");
+                return;
+            }
+
+            // Convert input time to seconds
+            const timeInSeconds = timeInput * timeUnits[timeUnit];
+            // Convert seconds to frequency in Hz
+            const frequencyInHz = 1 / timeInSeconds;
+            // Convert frequency to desired output unit
+            const result = frequencyInHz / frequencyUnits[frequencyUnit];
+
+            // Display the result with dynamic precision
+            document.getElementById("frequencyOutput").value = formatNumber(result);
+        }
+
+        // Function to convert Frequency to Time
+        function convertFrequencyToTime() {
+            const frequencyInput = parseFloat(document.getElementById("frequencyInput").value);
+            const frequencyUnit = document.getElementById("frequencyInputUnit").value;
+            const timeUnit = document.getElementById("timeOutputUnit").value;
+
+            if (isNaN(frequencyInput)) {
+                alert("Please enter a valid number for frequency.");
+                return;
+            }
+
+            // Convert input frequency to Hz
+            const frequencyInHz = frequencyInput * frequencyUnits[frequencyUnit];
+            // Convert frequency to time in seconds
+            const timeInSeconds = 1 / frequencyInHz;
+            // Convert time to desired output unit
+            const result = timeInSeconds / timeUnits[timeUnit];
+
+            // Display the result with dynamic precision
+            document.getElementById("timeOutput").value = formatNumber(result);
+        }
+
+        // Helper function to format numbers dynamically
+        function formatNumber(value) {
+            // Check if the number is a whole number
+            if (value % 1 === 0) {
+                return value.toString(); // No decimal places
+            }
+
+            // Check the number of fractional digits
+            const fractionalDigits = (value.toString().split('.')[1] || '').length;
+
+            // Limit to a maximum of 3 decimal places
+            return value.toFixed(Math.min(fractionalDigits, 3));
+        }
+    </script>
+</body>
+</html>
